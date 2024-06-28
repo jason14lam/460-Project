@@ -1,0 +1,28 @@
+def binaryHybrid(arr, target):
+    def findPiv(arr, left, right):  # function to find the median of medians
+        if right - left + 1 <= 5:
+            return sorted(arr[left:right + 1])[len(arr[left:right + 1]) // 2]
+        medians = []  # finding medians of groups of 5
+        for i in range(left, right + 1, 5):
+            group = arr[i:i + 5]
+            medians.append(sorted(group)[len(group) // 2])
+        return findPiv(medians, 0, len(medians) - 1)  # recursively find median of medians
+
+    def search(arr, left, right, target):  # binary search function
+        if left > right:
+            return -1
+        if right - left <= 10:  # linear search for small subarray
+            for i in range(left, right + 1):
+                if arr[i] == target:
+                    return i
+            return -1
+        pivot = findPiv(arr, left, right)  # find pivot using median of medians
+        pivotIndex = arr.index(pivot)
+        if arr[pivotIndex] == target:  # check if pivot is target
+            return pivotIndex
+        elif target < arr[pivotIndex]:  # recursive search for left array
+            return search(arr, left, pivotIndex - 1, target)
+        else:
+            return search(arr, pivotIndex + 1, right, target)  # recursive search for right array
+
+    return search(arr, 0, len(arr) - 1, target)
